@@ -11,6 +11,10 @@ const Search = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
+  const fetchUserData = async (username, location, minRepos, page = 1) => {
+    return await advancedUserSearch(username, location, minRepos, page);
+  };
+
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -19,7 +23,7 @@ const Search = () => {
     setPage(1);
 
     try {
-      const data = await advancedUserSearch(username, location, minRepos, 1);
+      const data = await fetchUserData(username, location, minRepos, 1);
 
       setResults(data.items);
       setHasMore(data.total_count > data.items.length);
@@ -35,11 +39,11 @@ const Search = () => {
     setLoading(true);
 
     try {
-      const data = await advancedUserSearch(username, location, minRepos, nextPage);
+      const data = await fetchUserData(username, location, minRepos, nextPage);
 
       setResults((prev) => [...prev, ...data.items]);
       setPage(nextPage);
-      setHasMore((nextPage * 30) < data.total_count);
+      setHasMore(nextPage * 30 < data.total_count);
     } catch (err) {
       setError("Unable to load more results.");
     } finally {
@@ -106,6 +110,7 @@ const Search = () => {
               <a
                 href={user.html_url}
                 target="_blank"
+                rel="noreferrer"
                 className="text-blue-600 underline"
               >
                 View Profile
